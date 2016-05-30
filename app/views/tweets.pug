@@ -1,0 +1,5 @@
+each tweet in tweets
+    li.illust(data-status-id=tweet.id)
+        a(href=tweet.url)
+            img(src=tweet.media.media_url)
+            small #{tweet.user.name} (@#{tweet.user.screen_name})
