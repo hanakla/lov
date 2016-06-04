@@ -1,5 +1,8 @@
 each tweet in tweets
-    li.illust(data-status-id=tweet.id)
+    li.illust.illust--loading(data-status-id=tweet.id)
+        if isTwitterAuthenticated
+            span ♥
         a(href=tweet.url)
             img(src=tweet.media.media_url)
+            span= tweet.text
             small #{tweet.user.name} (@#{tweet.user.screen_name})

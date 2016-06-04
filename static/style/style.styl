@@ -21,6 +21,17 @@ html, body
     // margin 0 auto
     width 200px
     min-height 100px
+    // opacity 1
+
+    border 1px solid #eaf
+    border-radius 4px
+
+    transition-property transform, opacity
+    transition-duration 1s
+
+    &.illust--loading
+        opacity 0
+        transform translateY(8px)
 
     img
         width 100%
