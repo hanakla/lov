@@ -11,5 +11,14 @@ html
             ul#illusts
                 include tweets
 
+        footer.footer
+            img.footer_loading(src="images/loading.gif")
+
+        .loading
+            div.loading_inner
+                span Loading
+                img.loading_image(src="images/loading.gif", alt="loading")
+
+
         script#last-status-id(data-last-status-id=lastStatusId)
         script(src="js/main.js")

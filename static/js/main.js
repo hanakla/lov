@@ -52,6 +52,9 @@ $.ready.then(() => {
     $(window).on("load", async e => {
         for (let el of $("#illusts .illust")) {
             await sleep(4);
+
+            $(".loading").addClass("loading--hidden");
+
             $(el).removeClass("illust--loading");
             resetWookmark();
         }
