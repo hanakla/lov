@@ -61,7 +61,8 @@ export function watch() {
     gulp.watch("static/js/**/*.js", buildWebpack);
 }
 
-const buildWatch = gulp.series(gulp.parallel(stylus, buildWebpack), watch);
-export {buildWatch};
+const build = gulp.parallel(stylus, buildWebpack);
+const buildWatch = gulp.series(build, watch);
 
+export {build, buildWatch};
 export default buildWatch;
