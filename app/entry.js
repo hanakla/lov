@@ -76,7 +76,7 @@ const selectTweetWithIllust = tweets => {
         compileDebug: false,
     });
 
-    app.keys = ["secret"];
+    app.keys = config.session.keys;
     app.use(session({
         store: new MongoStore({
             // host: "localhost",
