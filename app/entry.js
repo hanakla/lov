@@ -60,7 +60,6 @@ const selectTweetWithIllust = tweets => {
     passport.use(new TwitterStrategy({
         consumerKey: config.twitter.consumer_key,
         consumerSecret: config.twitter.consumer_secret,
-        callbackURL: "http://localhost:8000/auth/twitter/callback"
     }, (token, tokenSecret, profile, cb) => {
         cb(null, {twitter: {token, tokenSecret}});
     }));
