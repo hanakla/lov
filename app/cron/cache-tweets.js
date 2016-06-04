@@ -4,13 +4,13 @@ const {MongoClient, Long} = require("mongodb");
 const Twit = require("twit");
 
 const config = require("../config");
+
 const twit = new Twit({
     consumer_key: config.twitter.consumer_key,
     consumer_secret: config.twitter.consumer_secret,
     access_token: config.twitter.access_token,
     access_token_secret: config.twitter.access_token_secret,
 });
-
 
 const job = new CronJob({
     // Runs every 30 minutes
@@ -20,7 +20,7 @@ const job = new CronJob({
 
         try {
             const ASC = 1;
-            const db = await MongoClient.connect("mongodb://localhost:27017/gochiusa-lov");
+            const db = await MongoClient.connect(config.mongo.url);
             const collection = db.collection("tweets_cache");
 
             var lastCachedStatusId = (await collection.find({}, {id_str: 1}).sort({created_at: ASC}).limit(1).toArray())[0];

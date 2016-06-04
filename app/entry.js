@@ -43,7 +43,7 @@ const selectTweetWithIllust = tweets => {
 
 (async () => {
     //-- MongoClient
-    const db = await MongoClient.connect("mongodb://localhost:27017/gochiusa-lov");
+    const db = await MongoClient.connect(config.mongo.url);
 
     //-- Twitter clients
     const globalTwit = new Twit({
