@@ -3,7 +3,6 @@ require("./thirdparty/fetch");
 const $ = require("./util/domutil");
 const querystring = require("querystring");
 const Wookmark = require("./thirdparty/wookmark");
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const threshold = (eps, fn) => {
     var lastExecutionTimeMs = 0;
@@ -37,7 +36,7 @@ $.ready.then(() => {
             wookmark && wookmark.clear();
             wookmark = new Wookmark("#illusts", {
                 autoResize: true,
-                itemWidth: 200,
+                // itemWidth: 200,
                 offset: 8
             });
 
@@ -45,14 +44,8 @@ $.ready.then(() => {
         });
     };
 
-    $("#illusts").on("click", "a", e => {
-        $.cancelEvenet(e);
-    });
-
     $(window).on("load", async e => {
         for (let el of $("#illusts .illust")) {
-            await sleep(4);
-
             $(".loading").addClass("loading--hidden");
 
             $(el).removeClass("illust--loading");
@@ -66,7 +59,7 @@ $.ready.then(() => {
         resetWookmark();
     });
 
-    $(window).on("scroll", threshold(30, async e => {
+    $(window).on("scroll", threshold(10, async e => {
         const scrollBottom = window.innerHeight + Math.max(document.body.scrollTop, document.documentElement.scrollTop) + 60;
 
         if (scrollBottom < document.body.scrollHeight) return;

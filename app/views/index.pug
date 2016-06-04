@@ -3,16 +3,21 @@ html
     head
         meta(description="")
         meta(charset="utf-8")
-        title gochiusa-lov
+        title lov
         link(rel="stylesheet" href="style/style.css")
 
     body
-        article#wrap
+        //-
+            nav.sidebar
+                a.sidebar_linkToTwitter(href="auth/twitter") Link to Twtter
+                    .tooltip Twitter連携してふぁぼろうな
+
+        main#wrap
             ul#illusts
                 include tweets
 
         footer.footer
-            img.footer_loading(src="images/loading.gif")
+            .footer_loading
 
         .loading
             div.loading_inner

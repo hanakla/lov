@@ -1,8 +1,12 @@
 each tweet in tweets
     li.illust.illust--loading(data-status-id=tweet.id)
-        if isTwitterAuthenticated
-            span ♥
-        a(href=tweet.url)
-            img(src=tweet.media.media_url)
-            span= tweet.text
-            small #{tweet.user.name} (@#{tweet.user.screen_name})
+        a.illust_overlay(href=tweet.url)
+        img.illust_image(src=tweet.media.media_url)
+        .illust_meta
+            //- span.illust_mata_text= tweet.text
+            small.illust_mata_author by #{tweet.user.name} (@#{tweet.user.screen_name})
+
+            //-
+                if isTwitterAuthenticated
+                    button.illust_meta_twitterFav ♥
+                    button.illust_meta_twitterRetweet ♥

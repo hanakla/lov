@@ -5,9 +5,18 @@
 
 html, body
     margin 0
-    padding 8px 16px
+    padding 0
+    // padding 8px 16px
     width 100%
     height 100%
+
+    background-attachment fixed
+    background-image linear-gradient(to bottom, #eee, #fff)
+
+#wrap
+    width 100%
+    padding-top 16px
+    padding-left 48px
 
 #illusts
     position relative
@@ -17,34 +26,147 @@ html, body
 
     list-style none
 
-
 .illust
     position relative
-    // margin 0 auto
-    width 200px
+    width 250px
     min-height 100px
-    // opacity 1
 
-    border 1px solid #eaf
+    line-height 0 // Kill the Line-break space
+
     border-radius 4px
 
     transition-property transform, opacity
-    transition-duration 1s
+    transition-duration 1.5s
 
     &.illust--loading
         opacity 0
         transform translateY(8px)
 
-    img
+    .illust_image
         width 100%
 
+    .illust_overlay
+        position absolute
+        top 0
+        z-index 1
+
+        display block
+        width 100%
+        height 100%
+
+        color #fff
+
+    .illust_meta
+        position absolute
+        top 0
+
+        // display flex
+        // justify-content bottom
+        // align-items center
+
+        width 100%
+        padding 8px
+
+        font-size 12px
+        line-height 1
+
+        color #fff
+        // background-image linear-gradient(to top, rgba(#000, 0), rgba(#000, .8))
+        background-color rgba(#000, .5)
+        opacity 0
+
+        transition-property opacity
+        transition-timing-function cubic-bezier(0.5, 0, 0.2, 0.65)
+        transition-duration .3s
+
+    &:hover
+        .illust_meta
+            opacity 1
+
+// .sidebar
+//     position fixed
+//     top 0
+//     left 0
+//     z-index 2
+//
+//     width 40px
+//     height 100%
+//     padding 4px
+//
+//     background-color rgba(#ddd, .5)
+//
+//     .sidebar_linkToTwitter
+//         position relative
+//
+//         display inline-block
+//
+//         width 32px
+//         height 32px
+//
+//         color rgba(#000, 0)
+//
+//         background-image url("../images/TwitterLogo.png")
+//         background-size 32px
+//
+//         .tooltip
+//             position absolute
+//             top 0
+//             left 100%
+//
+//             width 10em
+//             padding 8px
+//
+//             font-size 12px
+//
+//             color #fff
+//             border-radius 4px
+//             background-color rgba(#000, .8)
+//             opacity 0
+//
+//             transition-property opacity
+//             transition-duration .2s
+//
+//         &:hover
+//             .tooltip
+//                 opacity 1
+
 .footer
-    padding 32px 0
+    padding 64px 0
+
     .footer_loading
+        position relative
+
         display block
         width 40px
         height 40px
         margin 0 auto
+
+        background-image url("../images/loading.gif")
+        background-size 100%
+        opacity .8
+
+        &::before
+            content ''
+
+            position absolute
+            top 25px
+            right 120%
+
+            width 250px
+
+            border-top 1px solid #ddd
+
+        &::after
+            content ''
+
+            position absolute
+            top 25px
+            left 120%
+
+            width 250px
+
+            border-top 1px solid #ddd
+
 
 .loading
     position fixed
