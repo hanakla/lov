@@ -5,8 +5,9 @@ const path = require("path");
 
 export function stylus() {
     return gulp.src("static/style/**/*.styl")
+        .pipe($.plumber())
         .pipe($.stylus({
-            use : [require("nib")]
+            use : [require("nib")()]
         }))
         .pipe(gulp.dest("build/style/"));
 }
