@@ -19,20 +19,25 @@ const job = new CronJob({
         console.info(`\u001b[36mJob "cache-oldest-tweets" started.\u001b[m`);
 
         try {
-            const ASC = 1;
+            const DESC = -1;
             const db = await MongoClient.connect(config.mongo.url);
             const collection = db.collection("tweets_cache");
 
-            var lastCachedStatusId = (await collection.find({}, {id_str: 1}).sort({created_at: ASC}).limit(1).toArray())[0];
+            var lastCachedStatusId = (await collection.find({}, {id_str: 1}).sort({_id: DESC}).limit(1).toArray())[0];
             lastCachedStatusId = lastCachedStatusId ? lastCachedStatusId.id_str : null;
 
             while(true) {
-                let tweets = (await twit.get("search/tweets", {
+                let res = (await twit.get("search/tweets", {
                     q : config.twitter.query,
-                    max_id: lastCachedStatusId,
+                    since_id: lastCachedStatusId,
                     count: 100
-                })).data.statuses;
+                })).data;
 
+                if (res.errors) {
+                    throw new Error(errors[0].message);
+                }
+
+                let tweets = res.statuses;
                 let oldestFetchTweet = tweets[tweets.length - 1];
 
                 if (! oldestFetchTweet || oldestFetchTweet.id_str === lastCachedStatusId) {
