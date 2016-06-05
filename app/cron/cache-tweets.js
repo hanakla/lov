@@ -14,7 +14,7 @@ const twit = new Twit({
 
 const job = new CronJob({
     // Runs every 30 minutes
-    cronTime : "* */30 * * * *",
+    cronTime : "0 */30 * * * *",
     onTick: async () => {
         console.info(`\u001b[36mJob "cache-oldest-tweets" started.\u001b[m`);
 
