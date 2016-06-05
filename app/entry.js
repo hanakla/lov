@@ -137,7 +137,7 @@ const selectTweetWithIllust = tweets => {
 
         if (this.session.twitterAuth) {
             tweets = (yield this.twit.get("statuses/lookup", {id: _.map(tweets, "_id").join(",")})).data;
-            tweets.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+            tweets.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         }
 
         const oldestTweet = tweets[tweets.length - 1];
@@ -163,6 +163,7 @@ const selectTweetWithIllust = tweets => {
 
         if (this.session.twitterAuth) {
             tweets = (yield this.twit.get("statuses/lookup", {id: _.map(tweets, "_id").join(",")})).data;
+            tweets.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         }
 
         const oldestTweet = tweets[tweets.length - 1];
