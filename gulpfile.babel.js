@@ -18,6 +18,11 @@ export function copyImages() {
         .pipe(gulp.dest("build/images/"));
 }
 
+export function copyFonts() {
+    return gulp.src("static/fonts/**/*")
+        .pipe(gulp.dest("build/fonts"));
+}
+
 export function buildWebpack(done) {
     webpack({
         // target: "web",
@@ -71,11 +76,12 @@ export function buildWebpack(done) {
 
 export function watch() {
     gulp.watch("static/style/**/*.styl", stylus);
+    gulp.watch("static/fonts/**/*", copyFonts);
     gulp.watch("static/images/**/*", copyImages);
     gulp.watch("static/js/**/*.js", buildWebpack);
 }
 
-const build = gulp.parallel(stylus, copyImages, buildWebpack);
+const build = gulp.parallel(stylus, copyImages, copyFonts, buildWebpack);
 const buildWatch = gulp.series(build, watch);
 
 export {build, buildWatch};
