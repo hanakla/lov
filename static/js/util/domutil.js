@@ -9,8 +9,12 @@ const addListener = (elements, event, selector, listener, once) => {
         const [e] = args;
         const target = e.target;
 
-        if (typeof selector === "string" && matchesSelector.call(e.target, selector)) {
-            return listener.apply(null, args);
+        if (!e.target instanceof Element) {
+            return;
+        }
+
+        if (typeof selector === "string" && !matchesSelector.call(e.target, selector)) {
+            return;
         }
 
         if (once) {
