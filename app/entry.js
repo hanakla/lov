@@ -109,8 +109,8 @@ const selectTweetWithIllust = tweets => {
             this.twit = new Twit({
                 consumer_key: config.twitter.consumer_key,
                 consumer_secret: config.twitter.consumer_secret,
-                access_token: this.session.passport.user.twitter.token,
-                access_token_secret: this.session.passport.user.twitter.tokenSecret,
+                access_token: this.session.twitterAuth.token,
+                access_token_secret: this.session.twitterAuth.tokenSecret,
             });
         } else {
             this.twit = globalTwit;
@@ -123,7 +123,11 @@ const selectTweetWithIllust = tweets => {
     //-- Routes
     app.use(route.get("/", function* () {
         const cachedTweets = db.collection("tweets_cache");
-        const tweets = yield cachedTweets.find({}).sort({_id: MONGO_SORT_DESC}).limit(40).toArray();
+        var tweets = yield cachedTweets.find({}).sort({_id: MONGO_SORT_DESC}).limit(40).toArray();
+
+        if (this.session.twitterAuth) {
+            tweets = (yield this.twit.get("statuses/lookup", {id: _.map(tweets, "_id").join(",")})).data;
+        }
 
         const oldestTweet = tweets[tweets.length - 1];
 
@@ -134,9 +138,10 @@ const selectTweetWithIllust = tweets => {
         }, true);
     }));
 
-    app.use(route.get("/api/index", function* (next) {
+    //-- Local API
+    app.use(route.get("/api/index", function* () {
         const cachedTweets = db.collection("tweets_cache");
-        const tweets = yield cachedTweets.find({
+        var tweets = yield cachedTweets.find({
             _id: {
                 $lt: Long.fromString(this.query.lastStatusId)
             }
@@ -144,6 +149,10 @@ const selectTweetWithIllust = tweets => {
         .sort({_id: MONGO_SORT_DESC})
         .limit(40)
         .toArray();
+
+        if (this.session.twitterAuth) {
+            tweets = (yield this.twit.get("statuses/lookup", {id: _.map(tweets, "_id").join(",")})).data;
+        }
 
         const oldestTweet = tweets[tweets.length - 1];
 
@@ -160,7 +169,84 @@ const selectTweetWithIllust = tweets => {
         }
     }));
 
+    app.use(route.post("/api/fav/:statusId", function* (statusId) {
+        if (! this.session.twitterAuth) {
+            this.body = {success: false, reason: "You are not logged in Twitter."};
+            return;
+        }
+
+        const res = (yield this.twit.post("favorites/create", {id: statusId})).data;
+
+        if (res.errors) {
+            if (res.errors[0].code !== 139) { // 139: Already favorited
+                this.body = {success: false, reason: res.errors[0].message};
+                return;
+            }
+        }
+
+        this.body = {success: true};
+    }));
+
+    app.use(route.delete("/api/fav/:statusId", function* (statusId) {
+        if (! this.session.twitterAuth) {
+            this.body = {success: false, reason: "You are not logged in Twitter."};
+            return;
+        }
+
+        const res = (yield this.twit.post("favorites/destroy", {id: statusId})).data;
+
+        if (res.errors) {
+            this.body = {success: false, reason: res.errors[0].message};
+            return;
+        }
+
+        this.body = {success: true};
+    }));
+
+    // app.use(route.post("/api/retweet/:statusId", function* (statusId) {
+    //     if (! this.session.twitterAuth) {
+    //         this.body = {success: false, reason: "You are not logged in Twitter."};
+    //         return;
+    //     }
+    //
+    //     const res = (yield this.twit.post("favorites/create", {id: statusId})).data;
+    //
+    //     if (res.errors) {
+    //         if (res.errors[0].code !== 139) { // 139: Already favorited
+    //             this.body = {success: false, reason: res.errors[0].message};
+    //             return;
+    //         }
+    //     }
+    //
+    //     this.body = {success: true};
+    // }));
+    //
+    // app.use(route.delete("/api/retweet/:statusId", function* (statusId) {
+    //     if (! this.session.twitterAuth) {
+    //         this.body = {success: false, reason: "You are not logged in Twitter."};
+    //         return;
+    //     }
+    //
+    //     const res = (yield this.twit.post("favorites/destroy", {id: statusId})).data;
+    //
+    //     if (res.errors) {
+    //         this.body = {success: false, reason: res.errors[0].message};
+    //         return;
+    //     }
+    //
+    //     this.body = {success: true};
+    // }));
+
     ////-- twitter
+    app.use(route.get("/auth/disconnect", function* () {
+        if (this.session && this.session.twitterAuth) {
+            delete this.session.twitterAuth;
+            delete this.session.passport.user.twitter;
+        }
+
+        this.redirect("/");
+    }));
+
     app.use(route.get("/auth/twitter", passport.authenticate("twitter")));
 
     app.use(route.get("/auth/twitter/callback", passport.authenticate("twitter", {

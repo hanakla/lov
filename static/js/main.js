@@ -76,4 +76,42 @@ $.ready.then(() => {
 
         activeRequest = null;
     }));
+
+    // $("#illusts").on("click", ".illust_action--retweet", async e => {
+    //     const statusId = $(e.target).parents(".illust")[0].dataset.statusId;
+    //     const req = await fetch(`/api/retweet/${statusId}`, {
+    //         method: "POST",
+    //         credentials: "same-origin",
+    //     });
+    //     const res = JSON.parse(await req.text());
+    //     console.log(res);
+    // });
+
+
+    // Handle favorite
+    $("#illusts").on("click", ".illust_action--fav", async e => {
+        const statusId = $(e.target).parents(".illust")[0].dataset.statusId;
+        const req = await fetch(`/api/fav/${statusId}`, {
+            method: "POST",
+            credentials: "same-origin",
+        });
+        const res = JSON.parse(await req.text());
+
+        if (res.success) {
+            $(e.target).removeClass("illust_action--fav").addClass("illust_action--favorited");
+        }
+    });
+
+    $("#illusts").on("click", ".illust_action--favorited", async e => {
+        const statusId = $(e.target).parents(".illust")[0].dataset.statusId;
+        const req = await fetch(`/api/fav/${statusId}`, {
+            method: "DELETE",
+            credentials: "same-origin",
+        });
+        const res = JSON.parse(await req.text());
+
+        if (res.success) {
+            $(e.target).removeClass("illust_action--favorited").addClass("illust_action--fav");
+        }
+    });
 });

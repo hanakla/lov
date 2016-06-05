@@ -2,11 +2,15 @@ each tweet in tweets
     li.illust.illust--loading(data-status-id=tweet.id)
         a.illust_overlay(href=tweet.url)
         img.illust_image(src=tweet.media.media_url)
+
         .illust_meta
             //- span.illust_mata_text= tweet.text
             small.illust_mata_author by #{tweet.user.name} (@#{tweet.user.screen_name})
 
-            //-
+            .illust_meta_actions
                 if isTwitterAuthenticated
-                    button.illust_meta_twitterFav ♥
-                    button.illust_meta_twitterRetweet ♥
+                    //- button.illust_action.fa.fa-retweet&attributes({class: tweet.retweeted ? "illust_action--retweeted" : "illust_action--retweet"})
+                    button.illust_action.fa.fa-star&attributes({class: tweet.favorited ? "illust_action--favorited" : "illust_action--fav"})
+                else
+                    //- a.illust_action.fa.fa-retweet(href="/auth/twitter")&attributes({class: tweet.retweeted ? "illust_action--retweeted" : "illust_action--retweet"})
+                    a.illust_action.fa.fa-star(href="/auth/twitter")&attributes({class: tweet.favorited ? "illust_action--favorited" : "illust_action--fav"})

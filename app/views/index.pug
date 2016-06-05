@@ -8,10 +8,11 @@ html
         link(rel="stylesheet" href="style/style.css")
 
     body
-        //-
+        if isTwitterAuthenticated
             nav.sidebar
-                a.sidebar_linkToTwitter(href="auth/twitter") Link to Twtter
-                    .tooltip Twitter連携してふぁぼろうな
+                a.sidebar_linkToTwitter(href="auth/disconnect")
+                    i.fa.fa-twitter
+                    .tooltip ログアウト
 
         main#wrap
             ul#illusts
