@@ -43,21 +43,27 @@ export function buildWebpack(done) {
                     test: /\.js$/,
                     loader: "babel-loader",
                     exclude: /(node_modules|bower_components)/,
+                    query: {
+                        presets: ["es2015"],
+                        plugins: [
+                            "transform-runtime"
+                        ]
+                    }
                 }
             ]
         },
         plugins: [
             new webpack.ResolverPlugin(new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin("bower.json", ["main"])),
             new webpack.ResolverPlugin(new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin("component.json", ["main"])),
-            // new webpack.ProvidePlugin({window: "window"}),
             new webpack.optimize.AggressiveMergingPlugin,
             new webpack.optimize.DedupePlugin,
-            // new webpack.optimize.UglifyJsPlugin
+            new webpack.optimize.UglifyJsPlugin,
         ]
     },  function(err, stats) {
         if (err) {
             console.log(err);
         }
+
         done(err);
     });
 }

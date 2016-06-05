@@ -100,6 +100,11 @@ const selectTweetWithIllust = tweets => {
     app.use(pug.middleware);
 
     app.use(function* (next) {
+        this.set("X-UA-Compatible", "IE=edge");
+        yield* next;
+    });
+
+    app.use(function* (next) {
         if (this.session.twitterAuth) {
             this.twit = new Twit({
                 consumer_key: config.twitter.consumer_key,
