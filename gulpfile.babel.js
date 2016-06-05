@@ -4,7 +4,7 @@ const webpack = require("webpack");
 const path = require("path");
 
 export function stylus() {
-    return gulp.src("static/style/**/*.styl")
+    return gulp.src(["static/style/**/*.styl", "!**/*/_*.styl"])
         .pipe($.plumber())
         .pipe($.stylus({
             compress: true,
