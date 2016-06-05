@@ -53,12 +53,6 @@ $.ready.then(() => {
         }
     });
 
-    $("#illusts").on("load", ".illust img", e => {
-        console.log(e.target);
-        $(e.target).parents(".illust").removeClass("illust--loading")
-        resetWookmark();
-    });
-
     $(window).on("scroll", threshold(10, async e => {
         const scrollBottom = window.innerHeight + Math.max(document.body.scrollTop, document.documentElement.scrollTop) + 60;
 
