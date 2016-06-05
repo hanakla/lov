@@ -121,12 +121,23 @@ const selectTweetWithIllust = tweets => {
 
 
     //-- Routes
+    app.use(route.get("/session", function* () {
+        // console.log(this.session);
+        this.body = this.session;
+    }));
+
+    app.use(route.get("/session/clear", function* () {
+        this.session = null;
+        this.body = "done";
+    }));
+
     app.use(route.get("/", function* () {
         const cachedTweets = db.collection("tweets_cache");
         var tweets = yield cachedTweets.find({}).sort({_id: MONGO_SORT_DESC}).limit(40).toArray();
 
         if (this.session.twitterAuth) {
             tweets = (yield this.twit.get("statuses/lookup", {id: _.map(tweets, "_id").join(",")})).data;
+            tweets.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
         }
 
         const oldestTweet = tweets[tweets.length - 1];
