@@ -121,16 +121,6 @@ const selectTweetWithIllust = tweets => {
 
 
     //-- Routes
-    app.use(route.get("/session", function* () {
-        // console.log(this.session);
-        this.body = this.session;
-    }));
-
-    app.use(route.get("/session/clear", function* () {
-        this.session = null;
-        this.body = "done";
-    }));
-
     app.use(route.get("/", function* () {
         const cachedTweets = db.collection("tweets_cache");
         const tweets = yield cachedTweets.find({}).sort({_id: MONGO_SORT_DESC}).limit(40).toArray();
