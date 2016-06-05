@@ -133,7 +133,10 @@ html, body
 //                 opacity 1
 
 .footer
+    max-width 100%
     padding 64px 0
+
+    overflow hidden
 
     .footer_loading
         position relative
@@ -202,3 +205,13 @@ html, body
         width 50px
         height 50px
         margin 0 auto
+
+@media screen and (max-width: 460px)
+    #wrap
+        padding-left 0
+
+    .illust
+        width 40%
+
+        .illust_meta
+            opacity .7

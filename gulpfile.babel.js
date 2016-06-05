@@ -7,6 +7,7 @@ export function stylus() {
     return gulp.src("static/style/**/*.styl")
         .pipe($.plumber())
         .pipe($.stylus({
+            compress: true,
             use : [require("nib")()]
         }))
         .pipe(gulp.dest("build/style/"));
