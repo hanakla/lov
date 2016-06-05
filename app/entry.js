@@ -133,7 +133,7 @@ const selectTweetWithIllust = tweets => {
 
     app.use(route.get("/", function* () {
         const cachedTweets = db.collection("tweets_cache");
-        const tweets = yield cachedTweets.find({}).sort({_id: MONGO_SORT_DESC}).limit(100).toArray();
+        const tweets = yield cachedTweets.find({}).sort({_id: MONGO_SORT_DESC}).limit(40).toArray();
 
         const oldestTweet = tweets[tweets.length - 1];
 
@@ -152,7 +152,7 @@ const selectTweetWithIllust = tweets => {
             }
         })
         .sort({_id: MONGO_SORT_DESC})
-        .limit(100)
+        .limit(40)
         .toArray();
 
         const oldestTweet = tweets[tweets.length - 1];
