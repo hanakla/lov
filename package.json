@@ -1,6 +1,6 @@
 {
-  "name": "gochiusa-lov",
-  "version": "1.0.0",
+  "name": "lov",
+  "version": "1.1.0",
   "description": "'E'ncount to lovely gochiusa illustrations",
   "main": "index.js",
   "scripts": {
