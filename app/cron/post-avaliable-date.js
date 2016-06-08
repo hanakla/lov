@@ -10,7 +10,7 @@ const job = new CronJob({
     // Runs every days at 00:00:01
     cronTime : "1 0 0 * * *",
     onTick: async () => {
-        console.info(`\u001b[36mJob "cache-post-available-dates" started.`);
+        console.info(`\u001b[36mJob "cache-post-available-dates" started.\u001b[m`);
         try {
             const db = await MongoClient.connect(config.mongo.url);
 
@@ -67,7 +67,7 @@ const job = new CronJob({
             console.error(e);
         }
 
-        console.info(`\u001b[36mJob "cache-post-available-dates" ended.`);
+        console.info(`\u001b[36mJob "cache-post-available-dates" ended.\u001b[m`);
     },
     start: true,
     runOnInit: true,
