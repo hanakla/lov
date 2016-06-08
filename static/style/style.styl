@@ -13,21 +13,18 @@ html, body
 
     font-family 'Lucida Grande','Hiragino Kaku Gothic ProN', Meiryo, sans-serif
 
+body
+    border-top 8px solid #eeab15
+
     background-attachment fixed
-    background-image linear-gradient(to bottom, #eee, #fff)
+    background-image linear-gradient(to bottom, #fbfbfb, 30% #fbfbfb, 70% #fff)
 
 #wrap
     width 100%
-    padding-top 16px
-    padding-left 48px
+    padding 16px 48px 0
 
-#illusts
-    position relative
-    width 100%
-    padding 0
-    margin 0 auto
-
-    list-style none
+#error
+    text-align center
 
 .source-quate
     display block
@@ -38,14 +35,94 @@ html, body
     color #777
     opacity .5
 
+    a
+        color #00b2ff
+
+.title
+    margin-top 2em
+    margin-bottom 3em
+
+    text-align center
+
+    .title_links
+        width (8em * 3)
+        margin 0 auto
+        padding 0
+
+        clearfix()
+
+    .title_link
+        display block
+        width 8em
+        float left
+
+        line-height 1
+
+        a
+            color #f1bc00
+            text-decoration none
+
+        &:hover
+            text-decoration underline
+
+        &.title_link--older
+            // margin-right 3em
+            text-align left
+
+        &.title_link--latest
+            // display block
+            // margin 0 auto
+            text-align center
+
+        &.title_link--newer
+            // margin-left 3em
+            text-align right
+
+    .title_current
+        display block
+        margin 0
+        margin-bottom .8em
+
+        font-size 24px
+        line-height 1
+        text-align center
+        font-weight normal
+        // font-style italic
+        vertical-align bottom
+
+.illusts
+    position relative
+    width 100%
+    padding 0
+    margin 0 auto
+
+    list-style none
+
+    &.illusts--notfound
+        text-align center
+
+        .illusts_notfound_text
+            color #aaa
+
+        .illusts_notfound_img
+            // width 40px
+            height 40px
+
+            background-size 40px
+            background-image url("../images/notfound.png")
+            background-position center center
+            background-repeat no-repeat
+
 .illust
     position relative
     width 250px
     min-height 100px
+    overflow hidden
 
     line-height 0 // Kill the Line-break space
 
     border-radius 4px
+    box-shadow 0 1px 1px rgba(#444448, .6)
 
     transition-property transform, opacity
     transition-duration 1.5s

@@ -13,6 +13,7 @@ const passport = require("koa-passport");
 const TwitterStrategy = require("passport-twitter");
 
 const {MongoClient, Long} = require("mongodb");
+const moment = require("moment");
 
 const Twit = require("twit");
 
@@ -63,7 +64,6 @@ const selectTweetWithIllust = tweets => {
     }, (token, tokenSecret, profile, cb) => {
         cb(null, {twitter: {token, tokenSecret}});
     }));
-
 
     //-- App
     const app = koa();
@@ -122,8 +122,14 @@ const selectTweetWithIllust = tweets => {
 
     //-- Routes
     app.use(route.get("/", function* () {
-        const cachedTweets = db.collection("tweets_cache");
-        var tweets = yield cachedTweets.find({}).sort({_id: MONGO_SORT_DESC}).limit(40).toArray();
+        // Fetch previous/current post available dates
+        const postAvailableDates = (yield db.collection("post_available_dates").find({}, {string: true}).sort({_id: MONGO_SORT_DESC}).limit(2).toArray())
+        postAvailableDates.forEach(date => {
+            delete date._id;
+            date.url = "/archives/" + date.string.replace(/-/g, "/")
+        });
+
+        var tweets = yield db.collection("tweets_cache").find({}).sort({_id: MONGO_SORT_DESC}).limit(40).toArray();
 
         if (this.session.twitterAuth) {
             tweets = (yield this.twit.get("statuses/lookup", {id: _.map(tweets, "_id").join(",")})).data;
@@ -134,19 +140,132 @@ const selectTweetWithIllust = tweets => {
 
         this.render("index", {
             tweets: selectTweetWithIllust(tweets),
-            lastStatusId: oldestTweet ? oldestTweet.id_str : null,
             isTwitterAuthenticated: !!this.session.twitterAuth,
+            searchStatus: {
+                lastStatusId: oldestTweet ? oldestTweet.id_str : null,
+                date: {
+                    older: postAvailableDates[1],
+                    // current: postAvailableDates[0].string,
+                }
+            },
+            searchStatusString: JSON.stringify({
+                lastStatusId: oldestTweet ? oldestTweet.id_str : null,
+                date: {
+                    older: postAvailableDates[1],
+                }
+            })
+        }, true);
+    }));
+
+    app.use(route.get("/archives/:year/:month/:day", function* (year, month, day) {
+        const dateString = `${year}-${month}-${day}`;
+        const pickDate = moment(dateString, "YYYY-MM-DD");
+
+        if (! /^([1-2][0-9]{3})-([01][0-9])-([0-3][0-9])$/.test(dateString) || ! pickDate.isValid()) {
+            this.render("index", {error: "Invalid date format"}, true);
+            return;
+        }
+
+        // Check target date posts availability
+        const dateInfo = (yield db.collection("post_available_dates").find({
+            year_str: pickDate.format("YYYY"),
+            month_str: pickDate.format("MM"),
+            day_str: pickDate.format("DD"),
+        }).toArray())[0];
+
+        if (! dateInfo) {
+            this.render("index", {tweets: []});
+            return;
+        }
+
+        // Fetch previous/next post available dates
+        const prevNextPostAvailableDates = (yield db.collection("post_available_dates").find({
+            $or: [{_id: dateInfo._id - 1}, {_id: dateInfo._id + 1}]
+        }, {
+            string: true
+        }).toArray())
+
+        prevNextPostAvailableDates.forEach(date => {
+            delete date._id;
+            date.url = "/archives/" + date.string.replace(/-/g, "/")
+        });
+
+        var tweets = yield db.collection("tweets_cache").find({
+            created_at: {
+                $gte: new Date(dateInfo.begin_unixtime),
+                $lte: new Date(dateInfo.end_unixtime),
+            }
+        }).toArray();
+
+        if (this.session.twitterAuth) {
+            tweets = (yield this.twit.get("statuses/lookup", {id: _.map(tweets, "_id").join(",")})).data;
+            tweets.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        }
+
+        const oldestTweet = tweets[tweets.length - 1];
+
+        this.render("index", {
+            date: pickDate.format("YYYY-MM-DD"),
+            tweets: selectTweetWithIllust(tweets),
+            isTwitterAuthenticated: !!this.session.twitterAuth,
+            searchStatus: {
+                lastStatusId: oldestTweet ? oldestTweet.id_str : null,
+                date: {
+                    older: prevNextPostAvailableDates[0],
+                    current: pickDate.format("YYYY-MM-DD"),
+                    newer: prevNextPostAvailableDates[1],
+                }
+            },
+            searchStatusString: JSON.stringify({
+                lastStatusId: oldestTweet ? oldestTweet.id_str : null,
+                date: {
+                    older: prevNextPostAvailableDates[0],
+                    current: pickDate.format("YYYY-MM-DD"),
+                    newer: prevNextPostAvailableDates[1],
+                }
+            })
         }, true);
     }));
 
     //-- Local API
     app.use(route.get("/api/index", function* () {
-        const cachedTweets = db.collection("tweets_cache");
-        var tweets = yield cachedTweets.find({
+        this.type = "application/json";
+
+        var pickDate = moment(this.query.date, "YYYY-MM-DD");
+        var prevNextPostAvailableDates;
+        const searchCondition = {
             _id: {
                 $lt: Long.fromString(this.query.lastStatusId)
+            },
+        };
+
+        if (this.query.date && this.query.date !== "") {
+            if (/^([1-2][0-9]{3})-([01][0-9])-([0-3][0-9])$/.test(this.query.date) && pickDate.isValid()) {
+                // Check target date posts availability
+                const dateInfo = (yield db.collection("post_available_dates").find({
+                    year_str: pickDate.format("YYYY"),
+                    month_str: pickDate.format("MM"),
+                    day_str: pickDate.format("DD"),
+                }).toArray())[0];
+
+                if (! dateInfo) {
+                    this.body = {success: true, available: false};
+                    return;
+                }
+
+                searchCondition.created_at = {
+                    $gte: new Date(dateInfo.begin_unixtime),
+                    $lte: new Date(dateInfo.end_unixtime),
+                };
+            } else {
+                this.body = {success: false, error: "Invalid date format"};
+                return;
             }
-        })
+        } else {
+            pickDate = null;
+        }
+
+        var tweets = yield db.collection("tweets_cache").find(searchCondition)
         .sort({_id: MONGO_SORT_DESC})
         .limit(40)
         .toArray();
@@ -163,11 +282,15 @@ const selectTweetWithIllust = tweets => {
             isTwitterAuthenticated: !!this.session.twitterAuth,
         });
 
-        this.type = "application/json";
         this.body = {
             available: tweets.length !== 0,
             list: this.body,
-            lastStatusId: oldestTweet ? oldestTweet.id_str : this.query.lastStatusId,
+            searchStatus: {
+                lastStatusId: oldestTweet ? oldestTweet.id_str : this.query.lastStatusId,
+                date: {
+                    current: pickDate ? pickDate.format("YYYY-MM-DD") : null,
+                }
+            }
         }
     }));
 
