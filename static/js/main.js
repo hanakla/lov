@@ -62,7 +62,10 @@ $.ready.then(() => {
         activeRequest = fetch("/api/index?" + querystring.stringify({
             date: searchStatus.date.current,
             lastStatusId: searchStatus.lastStatusId
-        }));
+        }), {
+            method: "GET",
+            credentials: "same-origin",
+        });
 
         const response = JSON.parse(await (await activeRequest).text());
 
