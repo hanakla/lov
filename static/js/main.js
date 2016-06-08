@@ -23,7 +23,7 @@ const threshold = (eps, fn) => {
 $.ready.then(() => {
     var wookmark;
     var activeRequest;
-    var lastStatusId = $("#last-status-id")[0].dataset.lastStatusId;
+    var searchStatus = JSON.parse($("#search-status")[0].dataset.status)
 
     var wookmarkAnimationRequestId;
 
@@ -34,7 +34,7 @@ $.ready.then(() => {
 
         wookmarkAnimationRequestId = requestAnimationFrame(() => {
             wookmark && wookmark.clear();
-            wookmark = new Wookmark("#illusts", {
+            wookmark = new Wookmark(".illusts", {
                 autoResize: true,
                 // itemWidth: 200,
                 offset: 8
@@ -45,7 +45,7 @@ $.ready.then(() => {
     };
 
     $(window).on("load", async e => {
-        for (let el of $("#illusts .illust")) {
+        for (let el of $(".illusts .illust")) {
             $(".loading").addClass("loading--hidden");
 
             $(el).removeClass("illust--loading");
@@ -59,7 +59,10 @@ $.ready.then(() => {
         if (scrollBottom < document.body.scrollHeight) return;
         if (activeRequest) return;
 
-        activeRequest = fetch("/api/index?" + querystring.stringify({lastStatusId}));
+        activeRequest = fetch("/api/index?" + querystring.stringify({
+            date: searchStatus.date.current,
+            lastStatusId: searchStatus.lastStatusId
+        }));
 
         const response = JSON.parse(await (await activeRequest).text());
 
@@ -71,25 +74,15 @@ $.ready.then(() => {
             resetWookmark();
         });
 
-        $list.appendTo("#illusts");
-        lastStatusId = response.lastStatusId;
+        $list.appendTo(".illusts");
+        searchStatus = response.searchStatus;
 
         activeRequest = null;
     }));
 
-    // $("#illusts").on("click", ".illust_action--retweet", async e => {
-    //     const statusId = $(e.target).parents(".illust")[0].dataset.statusId;
-    //     const req = await fetch(`/api/retweet/${statusId}`, {
-    //         method: "POST",
-    //         credentials: "same-origin",
-    //     });
-    //     const res = JSON.parse(await req.text());
-    //     console.log(res);
-    // });
-
 
     // Handle favorite
-    $("#illusts").on("click", ".illust_action--fav", async e => {
+    $(".illusts").on("click", ".illust_action--fav", async e => {
         const statusId = $(e.target).parents(".illust")[0].dataset.statusId;
         const req = await fetch(`/api/fav/${statusId}`, {
             method: "POST",
@@ -102,7 +95,7 @@ $.ready.then(() => {
         }
     });
 
-    $("#illusts").on("click", ".illust_action--favorited", async e => {
+    $(".illusts").on("click", ".illust_action--favorited", async e => {
         const statusId = $(e.target).parents(".illust")[0].dataset.statusId;
         const req = await fetch(`/api/fav/${statusId}`, {
             method: "DELETE",
