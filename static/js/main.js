@@ -77,14 +77,19 @@ $.ready.then(() => {
         if (! response.available) return;
 
         const $list = $.parseHtml(response.list);
-        $list.find("img").once("load", e => {
-            $(e.target).parents(".illust--loading").removeClass("illust--loading")
-            resetWookmark();
-        });
+        $list.css("display", "none").appendTo(".illusts");
 
-        $list.appendTo(".illusts");
+        await Promise.all($list.find("img").map(el => new Promise(resolve => {
+            $(el)
+                .once("load", resolve)
+                .once("error", resolve);
+        })));
+
+        $list.css("display", "");
+        resetWookmark();
+        setTimeout(() => $list.removeClass("illust--loading"), 100);
+
         searchStatus = response.searchStatus;
-
         activeRequest = null;
     }));
 
