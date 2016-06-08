@@ -28,6 +28,7 @@ body
 
 .source-quate
     display block
+    margin 0 8px
     margin-bottom 32px
 
     font-size 12px
@@ -207,6 +208,7 @@ body
 
     height 100%
     padding 8px
+    padding-top 32px
 
     .sidebar_linkToTwitter
         position relative
@@ -216,9 +218,23 @@ body
         width 32px
         height 32px
 
-        color #55acee
-
         font-size 32px
+        line-height 1
+
+        transition-property color
+        transition-duration .3s
+
+        &.sidebar_linkToTwitter--connected
+            color #55acee
+
+            &:hover
+                color #bdbebf
+
+        &.sidebar_linkToTwitter--disconnected
+            color #bdbebf
+
+            &:hover
+                color #55acee
 
         .tooltip
             position absolute
@@ -339,3 +355,17 @@ body
 
         .illust_meta
             opacity .7
+
+    .sidebar
+        display flex
+        justify-content center
+        align-items flex-end
+
+        .sidebar_linkToTwitter
+            width 40px
+            height 40px
+
+            font-size 40px
+
+        .tooltip
+            display none
