@@ -69,6 +69,11 @@ $.ready.then(() => {
 
         const response = JSON.parse(await (await activeRequest).text());
 
+        mixpanel.track("access:next-page", {
+            next_page_available: response.available,
+            date: searchStatus.date.current
+        });
+
         if (! response.available) return;
 
         const $list = $.parseHtml(response.list);
@@ -82,7 +87,6 @@ $.ready.then(() => {
 
         activeRequest = null;
     }));
-
 
     // Handle favorite
     $(".illusts").on("click", ".illust_action--fav", async e => {
@@ -110,4 +114,18 @@ $.ready.then(() => {
             $(e.target).removeClass("illust_action--favorited").addClass("illust_action--fav");
         }
     });
+
+    // mixpanel analytics
+    mixpanel.track_links(".title_link--older a", "access:older", function (a) {
+        return {date: a.innerText};
+    });
+
+    mixpanel.track_links(".title_link--newer a", "access:newer", function (a) {
+        return {date: a.innerText};
+    });
+
+    const trackId = document.cookie.match(/mixpanel_tracking_id=([^;]+)/);
+    if (trackId) {
+        mixpanel.identify(trackId[1]);
+    }
 });

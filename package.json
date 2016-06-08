@@ -35,11 +35,13 @@
     "koa-stylus": "0.0.3",
     "lodash": "^4.13.1",
     "lodash-deep": "^2.0.0",
+    "mixpanel": "^0.4.0",
     "moment": "^2.13.0",
     "mongodb": "^2.1.21",
     "nib": "^1.1.0",
     "passport-twitter": "^1.0.4",
-    "twit": "^2.2.4"
+    "twit": "^2.2.4",
+    "uuid": "^2.0.2"
   },
   "devDependencies": {
     "babel-loader": "^6.2.4",

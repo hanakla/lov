@@ -11,6 +11,8 @@ const koaStylus = require("koa-stylus");
 const Pug = require("koa-pug");
 const passport = require("koa-passport");
 const TwitterStrategy = require("passport-twitter");
+const MixPanel = require("mixpanel");
+const uuid = require("uuid");
 
 const {MongoClient, Long} = require("mongodb");
 const moment = require("moment");
@@ -25,7 +27,6 @@ const MONGO_SORT_DESC = -1;
 const SEARCH_QUERY = config.twitter.query;
 
 const selectTweetWithIllust = tweets => {
-    // _.each(tweets, tweet => console.log(tweet))
     return _(tweets)
         .filter(tweet => tweet.entities.media && _.some(tweet.entities.media, media => media.type === "photo"))
         .map(tweet => {
@@ -66,6 +67,7 @@ const selectTweetWithIllust = tweets => {
     }));
 
     //-- App
+    const mixpanel = MixPanel.init(config.mixpanel.token);
     const app = koa();
 
     const pug = new Pug({
@@ -105,6 +107,13 @@ const selectTweetWithIllust = tweets => {
     });
 
     app.use(function* (next) {
+        if (! this.session.mixpanel_tracking_id) {
+            this.session.mixpanel_tracking_id = uuid.v4();
+            this.cookies.set("mixpanel_tracking_id", this.session.mixpanel_tracking_id, {
+                httpOnly: false
+            });
+        }
+
         if (this.session.twitterAuth) {
             this.twit = new Twit({
                 consumer_key: config.twitter.consumer_key,
@@ -225,6 +234,11 @@ const selectTweetWithIllust = tweets => {
                 }
             })
         }, true);
+
+        process.nextTick(() => mixpanel.track("access:archive", {
+            distinct_id: this.session.mixpanel_tracking_id,
+            date: pickDate.format("YYYY-MM-DD"),
+        }));
     }));
 
     //-- Local API
@@ -291,7 +305,7 @@ const selectTweetWithIllust = tweets => {
                     current: pickDate ? pickDate.format("YYYY-MM-DD") : null,
                 }
             }
-        }
+        };
     }));
 
     app.use(route.post("/api/fav/:statusId", function* (statusId) {
@@ -310,6 +324,9 @@ const selectTweetWithIllust = tweets => {
         }
 
         this.body = {success: true};
+        process.nextTick(() => mixpanel.track("social:favorited", {
+            distinct_id: this.session.mixpanel_tracking_id,
+        }));
     }));
 
     app.use(route.delete("/api/fav/:statusId", function* (statusId) {
@@ -326,6 +343,9 @@ const selectTweetWithIllust = tweets => {
         }
 
         this.body = {success: true};
+        process.nextTick(() => mixpanel.track("social:un-favorited", {
+            distinct_id: this.session.mixpanel_tracking_id,
+        }));
     }));
 
     // app.use(route.post("/api/retweet/:statusId", function* (statusId) {
@@ -370,6 +390,9 @@ const selectTweetWithIllust = tweets => {
         }
 
         this.redirect("/");
+        process.nextTick(() => mixpanel.track("auth:disconnect-twitter", {
+            distinct_id: this.session.mixpanel_tracking_id,
+        }));
     }));
 
     app.use(route.get("/auth/twitter", passport.authenticate("twitter")));
@@ -382,12 +405,15 @@ const selectTweetWithIllust = tweets => {
     app.use(route.get("/auth/twitter/success", function* () {
         this.session.twitterAuth = this.session.passport.user.twitter;
         this.redirect("/");
+
+        process.nextTick(() => mixpanel.track("auth:authenticate-twitter", {
+            distinct_id: this.session.mixpanel_tracking_id,
+        }));
     }));
 
     app.use(route.get("/auth/failure", function* () {
         this.render("auth/failure");
     }));
-
 
     console.log(`\u001b[32mServer listening on ${process.env.PORT}\u001b[m`);
     app.listen(process.env.PORT);
