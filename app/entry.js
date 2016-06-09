@@ -110,7 +110,8 @@ const selectTweetWithIllust = tweets => {
         if (! this.session.mixpanel_tracking_id) {
             this.session.mixpanel_tracking_id = uuid.v4();
             this.cookies.set("mixpanel_tracking_id", this.session.mixpanel_tracking_id, {
-                httpOnly: false
+                httpOnly: false,
+                maxAge: 1000 * 60 * 60 * 24 * 90, // 90days
             });
         }
 
