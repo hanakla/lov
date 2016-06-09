@@ -109,11 +109,12 @@ const selectTweetWithIllust = tweets => {
     app.use(function* (next) {
         if (! this.session.mixpanel_tracking_id) {
             this.session.mixpanel_tracking_id = uuid.v4();
-            this.cookies.set("mixpanel_tracking_id", this.session.mixpanel_tracking_id, {
-                httpOnly: false,
-                maxAge: 1000 * 60 * 60 * 24 * 90, // 90days
-            });
         }
+
+        this.cookies.set("mixpanel_tracking_id", this.session.mixpanel_tracking_id, {
+            httpOnly: false,
+            maxAge: 1000 * 60 * 60 * 24 * 90, // 90days
+        });
 
         if (this.session.twitterAuth) {
             this.twit = new Twit({
