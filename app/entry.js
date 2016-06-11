@@ -152,6 +152,7 @@ const selectTweetWithIllust = tweets => {
         this.render("index", {
             tweets: selectTweetWithIllust(tweets),
             isTwitterAuthenticated: !!this.session.twitterAuth,
+            doNotTrack: this.session.dnt,
             searchStatus: {
                 lastStatusId: oldestTweet ? oldestTweet.id_str : null,
                 date: {
@@ -185,7 +186,10 @@ const selectTweetWithIllust = tweets => {
         }).toArray())[0];
 
         if (! dateInfo) {
-            this.render("index", {tweets: []});
+            this.render("index", {
+                tweets: [],
+                doNotTrack: this.session.dnt,
+            });
             return;
         }
 
@@ -219,6 +223,7 @@ const selectTweetWithIllust = tweets => {
             date: pickDate.format("YYYY-MM-DD"),
             tweets: selectTweetWithIllust(tweets),
             isTwitterAuthenticated: !!this.session.twitterAuth,
+            doNotTrack: this.session.dnt,
             searchStatus: {
                 lastStatusId: oldestTweet ? oldestTweet.id_str : null,
                 date: {
@@ -242,6 +247,11 @@ const selectTweetWithIllust = tweets => {
             date: pickDate.format("YYYY-MM-DD"),
         }));
     }));
+
+    app.use(route.get("/dnt", function* () {
+        this.session.dnt = true;
+        this.redirect("/");
+    }))
 
     //-- Local API
     app.use(route.get("/api/index", function* () {
