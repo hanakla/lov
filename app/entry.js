@@ -242,10 +242,14 @@ const selectTweetWithIllust = tweets => {
             })
         }, true);
 
-        process.nextTick(() => mixpanel.track("access:archive", {
-            distinct_id: this.session.mixpanel_tracking_id,
-            date: pickDate.format("YYYY-MM-DD"),
-        }));
+        process.nextTick(() => {
+            if (this.session.dnt) return;
+
+            mixpanel.track("access:archive", {
+                distinct_id: this.session.mixpanel_tracking_id,
+                date: pickDate.format("YYYY-MM-DD"),
+            });
+        });
     }));
 
     app.use(route.get("/dnt", function* () {
@@ -336,9 +340,13 @@ const selectTweetWithIllust = tweets => {
         }
 
         this.body = {success: true};
-        process.nextTick(() => mixpanel.track("social:favorited", {
-            distinct_id: this.session.mixpanel_tracking_id,
-        }));
+        process.nextTick(() => {
+            if (this.session.dnt) return;
+
+            mixpanel.track("social:favorited", {
+                distinct_id: this.session.mixpanel_tracking_id,
+            });
+        });
     }));
 
     app.use(route.delete("/api/fav/:statusId", function* (statusId) {
@@ -355,9 +363,13 @@ const selectTweetWithIllust = tweets => {
         }
 
         this.body = {success: true};
-        process.nextTick(() => mixpanel.track("social:un-favorited", {
-            distinct_id: this.session.mixpanel_tracking_id,
-        }));
+        process.nextTick(() => {
+            if (this.session.dnt) return;
+
+            mixpanel.track("social:un-favorited", {
+                distinct_id: this.session.mixpanel_tracking_id,
+            });
+        });
     }));
 
     // app.use(route.post("/api/retweet/:statusId", function* (statusId) {
@@ -402,9 +414,13 @@ const selectTweetWithIllust = tweets => {
         }
 
         this.redirect("/");
-        process.nextTick(() => mixpanel.track("auth:disconnect-twitter", {
-            distinct_id: this.session.mixpanel_tracking_id,
-        }));
+        process.nextTick(() => {
+            if (this.session.dnt) return;
+
+            mixpanel.track("auth:disconnect-twitter", {
+                distinct_id: this.session.mixpanel_tracking_id,
+            });
+        });
     }));
 
     app.use(route.get("/auth/twitter", passport.authenticate("twitter")));
@@ -418,9 +434,13 @@ const selectTweetWithIllust = tweets => {
         this.session.twitterAuth = this.session.passport.user.twitter;
         this.redirect("/");
 
-        process.nextTick(() => mixpanel.track("auth:authenticate-twitter", {
-            distinct_id: this.session.mixpanel_tracking_id,
-        }));
+        process.nextTick(() => {
+            if (this.session.dnt) return;
+
+            mixpanel.track("auth:authenticate-twitter", {
+                distinct_id: this.session.mixpanel_tracking_id,
+            });
+        });
     }));
 
     app.use(route.get("/auth/failure", function* () {
