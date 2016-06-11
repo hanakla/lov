@@ -37,7 +37,7 @@ $.ready.then(() => {
             wookmark = new Wookmark(".illusts", {
                 autoResize: true,
                 // itemWidth: 200,
-                offset: 8
+                offset: 14
             });
 
             wookmarkAnimationRequestId = null;
