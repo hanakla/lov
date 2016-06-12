@@ -99,7 +99,10 @@ $.ready.then(() => {
     // Viewer Open/Close
     $(window).on("keyup", e => {
         if (! e.keyCode === 27) return; // Escape
-        $(".viewer").removeClass("viewer--shown");
+        if ($(".viewer").is(".viewer--shown")) {
+            $(".viewer").removeClass("viewer--shown");
+            mixpanel.track("action:close-modal", {via: "esc-key"});
+        }
     })
 
     $(".illusts").on("click", ".illust_overlay", async e => {
@@ -139,15 +142,19 @@ $.ready.then(() => {
         $viewer
             .addClass("viewer--shown")
             .removeClass("viewer--showing");
+
+        mixpanel.track("action:open-modal", {statusId});
     });
 
     $(".viewer").on("click", e => {
         if (! $(e.target).is(".viewer")) return;
         $(".viewer").removeClass("viewer--shown");
+        mixpanel.track("action:close-modal", {via: "click out-side"});
     });
 
     $(".viewer_close").on("click", e => {
         $(".viewer").removeClass("viewer--shown");
+        mixpanel.track("action:close-modal", {via: "closer"});
     });
 
     // Handle favorite
@@ -184,6 +191,19 @@ $.ready.then(() => {
 
     mixpanel.track_links(".title_link--newer a", "access:newer", function (a) {
         return {date: a.innerText};
+    });
+
+    //-- track modal controls
+    mixpanel.track_links(".viewer_meta_author-icon", "access:twitter-goto-account", function (a) {
+        return {url: a.href, via: "icon"};
+    });
+
+    mixpanel.track_links(".viewer_meta_author-link", "access:twitter-goto-account", function (a) {
+        return {url: a.href, via: "author name"};
+    });
+
+    mixpanel.track_links(".viewer_illust", "access:twitter-goto-status", function (a) {
+        return {url: a.href};
     });
 
     const trackId = document.cookie.match(/mixpanel_tracking_id=([^;]+)/);
