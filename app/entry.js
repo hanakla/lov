@@ -324,6 +324,14 @@ const selectTweetWithIllust = tweets => {
         };
     }));
 
+    app.use(route.get("/api/status/:statusId", function* (statusId) {
+        this.type = "application/json";
+        const statuses = yield db.collection("tweets_cache").find({id_str: statusId}).toArray();
+
+        if (statuses.length === 0) return this.body = {available: false};
+        return this.body = {available: true, status: statuses[0]};
+    }));
+
     app.use(route.post("/api/fav/:statusId", function* (statusId) {
         if (! this.session.twitterAuth) {
             this.body = {success: false, reason: "You are not logged in Twitter."};
