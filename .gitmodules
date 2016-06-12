@@ -1,0 +1,3 @@
+[submodule "app/private"]
+	path = app/private
+	url = git@github.com:Ragg-/lov-hack.git
