@@ -5,6 +5,8 @@ const matchesSelector = Element.prototype.matches
     || Element.prototype.oMatchesSelector;
 
 const addListener = (elements, event, selector, listener, once) => {
+    const events = event instanceof Array ? event : [event];
+
     const delegator = (...args) => {
         const [e] = args;
         const target = e.target;
@@ -18,39 +20,24 @@ const addListener = (elements, event, selector, listener, once) => {
         }
 
         if (once) {
-            e.target.removeEventListener(event, delegator, false);
+            events.forEach(event => {
+                e.target.removeEventListener(event, delegator, false);
+            });
         }
         return listener.apply(null, args);
     }
 
-    return elements.each(el => el.addEventListener(event, delegator, false));
+    elements.each(el => events.forEach(event => el.addEventListener(event, delegator, false)));
 };
 
 const proto = Object.assign(Object.create(Array.prototype), {
-    on(event, selector, listener) {
-        if (typeof selector === "function") {
-            listener = selector;
-            selector = null;
-        }
-
-        return addListener(this, event, selector, listener, false);
-    },
-    once(event, selector, listener) {
-        if (typeof selector === "function") {
-            listener = selector;
-            selector = null;
-        }
-
-        return addListener(this, event, selector, listener, true);
-    },
-    addClass(className) {
-        this.forEach(el => el.classList.add(className));
+    // array
+    each(iterator) {
+        this.forEach(el => iterator(el));
         return this;
     },
-    removeClass(className) {
-        this.forEach(el => el.classList.remove(className));
-        return this;
-    },
+
+    // CSS Selector based operations
     filter(test) {
         if (typeof test === "string") {
             test = el => matches.call(el, selector);
@@ -62,20 +49,6 @@ const proto = Object.assign(Object.create(Array.prototype), {
         const newList = [];
         this.each(el => newList.push.apply(newList, $(selector, el)))
         return $(newList);
-    },
-    each(iterator) {
-        this.forEach(el => iterator(el));
-        return this;
-    },
-    css(prop, value) {
-        return this.each(el => el.style[prop] = value);
-    },
-    append(selector) {
-        return $(selector).each(el => this[0].appendChild(el));
-    },
-    appendTo(selector) {
-        const target = $(selector);
-        return this.each(el => target[0].appendChild(el));
     },
     parents(selector) {
         const matchedParents = [];
@@ -94,7 +67,79 @@ const proto = Object.assign(Object.create(Array.prototype), {
         this.each(el => matchParent(el, selector));
 
         return $(matchedParents);
-    }
+    },
+    is(selector) {
+        return this.every(el => matchesSelector.call(el, selector));
+    },
+
+    // Element operation
+    addClass(className) {
+        this.forEach(el => el.classList.add(className));
+        return this;
+    },
+    removeClass(className) {
+        this.forEach(el => el.classList.remove(className));
+        return this;
+    },
+
+    attr(prop, value) {
+        if (arguments.length === 2) {
+            if (value == null) {
+                this.each(el => el.removeAttribute(prop, value));
+            } else {
+                this.each(el => el.setAttribute(prop, value));
+            }
+
+            return this;
+        }
+
+        return this[0] ? this[0].getAttribute(prop) : undefined;
+    },
+    css(prop, value) {
+        return this.each(el => el.style[prop] = value);
+    },
+
+    text(content) {
+        this.each(el => el.textContent = content);
+        return this;
+    },
+
+    // Elements operation - Events
+    on(event, selector, listener) {
+        if (typeof selector === "function") {
+            listener = selector;
+            selector = null;
+        }
+
+        addListener(this, event, selector, listener, /* once= */ false);
+        return this;
+    },
+    once(event, selector, listener) {
+        if (typeof selector === "function") {
+            listener = selector;
+            selector = null;
+        }
+
+        addListener(this, event, selector, listener, /* once= */ true);
+        return this;
+    },
+
+    awaitEvent(event, selector) {
+        var resolve;
+        const listener = e => { resolve(); };
+
+        addListener(this, event, selector, listener, /* once= */ true);
+        return new Promise(_resolve => { resolve = _resolve; });
+    },
+
+    // Complex DOM operation
+    append(selector) {
+        return $(selector).each(el => this[0].appendChild(el));
+    },
+    appendTo(selector) {
+        const target = $(selector);
+        return this.each(el => target[0].appendChild(el));
+    },
 });
 
 const $ = module.exports = (selector, el = document) => {
