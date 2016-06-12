@@ -7,13 +7,16 @@ const Wookmark = require("./thirdparty/wookmark");
 const threshold = (eps, fn) => {
     var lastExecutionTimeMs = 0;
     var paddingTimeMs = 1000 / eps;
+    var timerId;
 
     return _ => {
         var elapsedFromLastExectionMs = Date.now() - lastExecutionTimeMs;
         if (elapsedFromLastExectionMs < paddingTimeMs) {
+            timerId = setTimeout(() => fn(), elapsedFromLastExectionMs);
             return;
         }
 
+        clearTimeout(timerId);
         fn();
 
         lastExecutionTimeMs = Date.now();
