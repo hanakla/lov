@@ -96,6 +96,60 @@ $.ready.then(() => {
         activeRequest = null;
     }));
 
+    // Viewer Open/Close
+    $(window).on("keyup", e => {
+        if (! e.keyCode === 27) return; // Escape
+        $(".viewer").removeClass("viewer--shown");
+    })
+
+    $(".illusts").on("click", ".illust_overlay", async e => {
+        const statusId = $(e.target).parents(".illust")[0].dataset.statusId;
+        const illustUrl = $(e.target)[0].dataset.src;
+
+        const req = await fetch(`/api/status/${statusId}`, {
+            method: "GET",
+            credentials: "same-origin",
+        });
+        const res = JSON.parse(await req.text());
+
+        if (! res.available) return;
+
+        const $viewer = $(".viewer");
+
+        // Attach status to DOM
+        $viewer.find(".viewer_illust")
+            .attr("href", `https://twitter.com/${res.status.user.screen_name}/status/${statusId}`)
+            .css("background-image", `url("${illustUrl}")`);
+
+        $viewer.find(".viewer_meta_tweet").text(res.status.text);
+
+        $(".viewer_meta_author-link")
+            .attr("href", `https://twitter.com/${res.status.user.screen_name}`)
+            .text(res.status.user.name);
+
+        $(".viewer_meta_author-icon")
+            .attr("href", `https://twitter.com/${res.status.user.screen_name}`)
+            .css("background-image", `url("${res.status.user.profile_image_url}")`)
+
+        // Displaying
+        await $viewer
+            .addClass("viewer--showing")
+            .awaitEvent(["animationend", "webkitAnimationEnd", "oAnimationEnd", "mozAnimationEnd", "msAnimationEnd"]);
+
+        $viewer
+            .addClass("viewer--shown")
+            .removeClass("viewer--showing");
+    });
+
+    $(".viewer").on("click", e => {
+        if (! $(e.target).is(".viewer")) return;
+        $(".viewer").removeClass("viewer--shown");
+    });
+
+    $(".viewer_close").on("click", e => {
+        $(".viewer").removeClass("viewer--shown");
+    });
+
     // Handle favorite
     $(".illusts").on("click", ".illust_action--fav", async e => {
         const statusId = $(e.target).parents(".illust")[0].dataset.statusId;

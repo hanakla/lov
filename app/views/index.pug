@@ -56,6 +56,18 @@ html
                 span Loading
                 img.loading_image(src="/images/loading.gif", alt="loading")
 
+        .viewer(role="dialog")
+            .viewer_container
+                .viewer_close &times;
+                .viewer_content
+                    .viewer_meta
+                        a.viewer_meta_author-icon
+                        .viewer_meta_author Illustration by
+                            a.viewer_meta_author-link
+                        .viewer_meta_tweet
+                    a.viewer_illust
+                        //- img.viewer_illust(src=tweets[0].media.media_url)
+
         script#search-status(data-status=searchStatusString)
         if ! doNotTrack
             script.

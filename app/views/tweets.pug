@@ -1,6 +1,6 @@
 each tweet in tweets
     li.illust.illust--loading(data-status-id=tweet.id)
-        a.illust_overlay(href=tweet.url)
+        .illust_overlay(data-src=tweet.media.media_url)
         img.illust_image(src=tweet.media.media_url)
 
         .illust_meta
