@@ -7,8 +7,7 @@ const MONGO_SORT_ASC = 1;
 const MILLI_SECONDS_FOR_DAY = 1000 * 60 * 60 * 24;
 
 const job = new CronJob({
-    // Runs every days at 00:00:01
-    cronTime : "1 0 0 * * *",
+    cronTime : "0 */10 22,23 * * *",
     onTick: async () => {
         console.info(`\u001b[36mJob "cache-post-available-dates" started.\u001b[m`);
         try {
