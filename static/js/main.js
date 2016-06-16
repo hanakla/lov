@@ -6,6 +6,8 @@ const Wookmark = require("./thirdparty/wookmark");
 
 const ANIMATION_END_EVENTS = ["animationend", "webkitAnimationEnd", "oAnimationEnd", "mozAnimationEnd", "msAnimationEnd"];
 
+const timer = ms => new Promise(resolve => setTimeout(resolve, ms))
+
 const threshold = (eps, fn) => {
     var lastExecutionTimeMs = 0;
     var paddingTimeMs = 1000 / eps;
@@ -48,15 +50,6 @@ $.ready.then(() => {
             wookmarkAnimationRequestId = null;
         });
     };
-
-    $(window).on("load", async e => {
-        for (let el of $(".illusts .illust")) {
-            $(".loading").addClass("loading--hidden");
-
-            $(el).removeClass("illust--loading");
-            resetWookmark();
-        }
-    });
 
     $(window).on("scroll", threshold(10, async e => {
         const scrollBottom = window.innerHeight + Math.max(document.body.scrollTop, document.documentElement.scrollTop) + 60;
@@ -184,6 +177,17 @@ $.ready.then(() => {
         if (res.success) {
             $(e.target).removeClass("illust_action--favorited").addClass("illust_action--fav");
         }
+    });
+
+    // wait for image load
+    Promise.race([$(window).awaitEvent("load"), timer(3000)]).then(() => {
+        $(".loading").addClass("loading--hidden");
+
+        for (let el of $(".illusts .illust")) {
+            $(el).removeClass("illust--loading");
+        }
+
+        resetWookmark();
     });
 
     // mixpanel analytics
