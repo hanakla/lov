@@ -4,6 +4,8 @@ const $ = require("./util/domutil");
 const querystring = require("querystring");
 const Wookmark = require("./thirdparty/wookmark");
 
+const ANIMATION_END_EVENTS = ["animationend", "webkitAnimationEnd", "oAnimationEnd", "mozAnimationEnd", "msAnimationEnd"];
+
 const threshold = (eps, fn) => {
     var lastExecutionTimeMs = 0;
     var paddingTimeMs = 1000 / eps;
@@ -137,7 +139,7 @@ $.ready.then(() => {
         // Displaying
         await $viewer
             .addClass("viewer--showing")
-            .awaitEvent(["animationend", "webkitAnimationEnd", "oAnimationEnd", "mozAnimationEnd", "msAnimationEnd"]);
+            .awaitEvent(ANIMATION_END_EVENTS);
 
         $viewer
             .addClass("viewer--shown")
