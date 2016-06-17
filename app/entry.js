@@ -80,16 +80,12 @@ const selectTweetWithIllust = tweets => {
     app.keys = config.session.keys;
     app.use(session({
         store: new MongoStore({
-            // host: "localhost",
-            // port: 27017,
-            // db: "gochiusa-lov",
             db,
-            ttl: 60 * 60 * 24 * 60,
             collection: "sessions",
-            cookie: {
-                maxage: 60 * 60 * 24 * 60,
-            }
-        })
+        }),
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24 * 90, // 90days
+        },
     }));
 
     app.use(bodyParser());
@@ -111,10 +107,12 @@ const selectTweetWithIllust = tweets => {
             this.session.mixpanel_tracking_id = uuid.v4();
         }
 
-        this.cookies.set("mixpanel_tracking_id", this.session.mixpanel_tracking_id, {
-            httpOnly: false,
-            maxAge: 1000 * 60 * 60 * 24 * 90, // 90days
+        // update maxAge
+        this.cookies.set("koa.sid", this.cookies.get("koa.sid"), {
+            maxAge : 1000 * 60 * 60 * 24 * 90, // 90days
         });
+
+        this.cookies.set("mixpanel_tracking_id", this.session.mixpanel_tracking_id, {httpOnly: false});
 
         if (this.session.twitterAuth) {
             this.twit = new Twit({
