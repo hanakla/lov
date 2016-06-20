@@ -26,6 +26,11 @@ const MONGO_SORT_DESC = -1;
 
 const SEARCH_QUERY = config.twitter.query;
 
+const BLACKLISTED_STATUS_IDS = [
+    // Pasted retweets
+    "744762639180570624",
+].map(Long.fromString);
+
 const selectTweetWithIllust = tweets => {
     return _(tweets)
         .filter(tweet => tweet.entities.media && _.some(tweet.entities.media, media => media.type === "photo"))
@@ -138,7 +143,9 @@ const selectTweetWithIllust = tweets => {
             date.url = "/archives/" + date.string.replace(/-/g, "/")
         });
 
-        var tweets = yield db.collection("tweets_cache").find({}).sort({_id: MONGO_SORT_DESC}).limit(40).toArray();
+        var tweets = yield db.collection("tweets_cache")
+            .find({_id: {$nin: BLACKLISTED_STATUS_IDS}})
+            .sort({_id: MONGO_SORT_DESC}).limit(40).toArray();
 
         if (this.session.twitterAuth) {
             tweets = (yield this.twit.get("statuses/lookup", {id: _.map(tweets, "_id").join(",")})).data;
@@ -204,6 +211,9 @@ const selectTweetWithIllust = tweets => {
         });
 
         var tweets = yield db.collection("tweets_cache").find({
+            _id: {
+                $nin: BLACKLISTED_STATUS_IDS
+            },
             created_at: {
                 $gte: new Date(dateInfo.begin_unixtime),
                 $lte: new Date(dateInfo.end_unixtime),
@@ -263,7 +273,8 @@ const selectTweetWithIllust = tweets => {
         var prevNextPostAvailableDates;
         const searchCondition = {
             _id: {
-                $lt: Long.fromString(this.query.lastStatusId)
+                $lt: Long.fromString(this.query.lastStatusId),
+                $nin: BLACKLISTED_STATUS_IDS,
             },
         };
 
