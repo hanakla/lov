@@ -33,7 +33,7 @@ const BLACKLISTED_STATUS_IDS = [
     // INM
     "748084432855138304",
     "748073477488381956",
-].map(Long.fromString);
+].map(statusId => Long.fromString(statusId));
 
 const selectTweetWithIllust = tweets => {
     return _(tweets)
