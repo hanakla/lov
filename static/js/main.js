@@ -57,6 +57,8 @@ $.ready.then(() => {
         if (scrollBottom < document.body.scrollHeight) return;
         if (activeRequest) return;
 
+        $(".footer_loading").removeClass("footer_loading--no-loading");
+
         activeRequest = fetch("/api/index?" + querystring.stringify({
             date: searchStatus.date.current,
             lastStatusId: searchStatus.lastStatusId
@@ -85,7 +87,10 @@ $.ready.then(() => {
 
         $list.css("display", "");
         resetWookmark();
-        setTimeout(() => $list.removeClass("illust--loading"), 100);
+        setTimeout(() => {
+            $list.removeClass("illust--loading");
+            $(".footer_loading").addClass("footer_loading--no-loading");
+        }, 100);
 
         searchStatus = response.searchStatus;
         activeRequest = null;
