@@ -20,23 +20,12 @@ const moment = require("moment");
 const Twit = require("twit");
 
 const config = require("./config");
+const BLACKLISTED_STATUS_IDS = require("./exclusions").statusIds;
 
 const MONGO_SORT_ASC = 1;
 const MONGO_SORT_DESC = -1;
 
 const SEARCH_QUERY = config.twitter.query;
-
-const BLACKLISTED_STATUS_IDS = [
-    // Pasted retweets
-    "744762639180570624",
-
-    // Unrelated tweets
-    "764266522940354561",
-
-    // INM
-    "748084432855138304",
-    "748073477488381956",
-].map(statusId => Long.fromString(statusId));
 
 const selectTweetWithIllust = tweets => {
     return _(tweets)
