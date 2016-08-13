@@ -57,7 +57,8 @@ $.ready.then(() => {
         if (scrollBottom < document.body.scrollHeight) return;
         if (activeRequest) return;
 
-        $(".footer_loading").removeClass("footer_loading--no-loading");
+        const $footerLoading = $(".footer_loading");
+        $footerLoading.removeClass("footer_loading--no-loading");
 
         activeRequest = fetch("/api/index?" + querystring.stringify({
             date: searchStatus.date.current,
@@ -74,7 +75,10 @@ $.ready.then(() => {
             date: searchStatus.date.current
         });
 
-        if (! response.available) return;
+        if (! response.available) {
+            $footerLoading.addClass("footer_loading--no-loading");
+            return;
+        }
 
         const $list = $.parseHtml(response.list);
         $list.css("display", "none").appendTo(".illusts");
@@ -89,7 +93,7 @@ $.ready.then(() => {
         resetWookmark();
         setTimeout(() => {
             $list.removeClass("illust--loading");
-            $(".footer_loading").addClass("footer_loading--no-loading");
+            $footerLoading.addClass("footer_loading--no-loading");
         }, 100);
 
         searchStatus = response.searchStatus;
