@@ -4,6 +4,7 @@ module.exports = {
     "statusIds": [
         // Pasted retweet
         "744762639180570624",
+        "744243039359623168",
 
         // Unrelated tweets
         "764266522940354561",
