@@ -423,6 +423,15 @@ const selectTweetWithIllust = tweets => {
         }
 
         this.body = {success: true};
+
+        process.nextTick(() => {
+            if (this.session.dnt) return;
+
+            mixpanel.track("social:retweet", {
+                distinct_id: this.session.mixpanel_tracking_id,
+                statusId
+            });
+        });
     }));
 
     app.use(route.delete("/api/retweet/:statusId", function* (statusId) {
@@ -439,6 +448,14 @@ const selectTweetWithIllust = tweets => {
         }
 
         this.body = {success: true};
+        process.nextTick(() => {
+            if (this.session.dnt) return;
+
+            mixpanel.track("social:un-retweet", {
+                distinct_id: this.session.mixpanel_tracking_id,
+                statusId
+            });
+        });
     }));
 
     ////-- twitter
