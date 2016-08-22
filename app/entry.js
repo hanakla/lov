@@ -5,7 +5,7 @@ const koa = require("koa");
 const session = require("koa-generic-session");
 const MongoStore = require("koa-generic-session-mongo");
 const route = require("koa-route");
-const bodyParser = require("koa-bodyparser");
+const koaBetterBody = require("koa-better-body");
 const koaStatic = require("koa-static");
 const koaStylus = require("koa-stylus");
 const Pug = require("koa-pug");
@@ -89,7 +89,9 @@ const selectTweetWithIllust = tweets => {
         },
     }));
 
-    app.use(bodyParser());
+    app.use(koaBetterBody({
+        fields: true,
+    }));
 
     app.use(passport.initialize());
     app.use(passport.session());
