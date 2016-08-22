@@ -188,6 +188,35 @@ $.ready.then(() => {
         }
     });
 
+    // Handle retweet
+    $(".illusts").on("click", ".illust_action--retweet", async e => {
+        const statusId = $(e.target).parents(".illust")[0].dataset.statusId;
+        const req = await fetch(`/api/retweet/${statusId}`, {
+            body: Object.entries({status: ""}).reduce((fd, e) => fd.append(...e) || fd, new FormData()),
+            method: "POST",
+            credentials: "same-origin",
+        });
+
+        const res = JSON.parse(await req.text());
+
+        if (res.success) {
+            $(e.target).removeClass("illust_action--retweet").addClass("illust_action--retweeted");
+        }
+    });
+
+    $(".illusts").on("click", ".illust_action--retweeted", async e => {
+        const statusId = $(e.target).parents(".illust")[0].dataset.statusId;
+        const req = await fetch(`/api/retweet/${statusId}`, {
+            method: "DELETE",
+            credentials: "same-origin",
+        });
+        const res = JSON.parse(await req.text());
+
+        if (res.success) {
+            $(e.target).removeClass("illust_action--retweeted").addClass("illust_action--retweet");
+        }
+    });
+
     // wait for image load
     Promise.race([$(window).awaitEvent("load"), timer(3000)]).then(() => {
         $(".loading").addClass("loading--hidden");

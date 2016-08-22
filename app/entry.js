@@ -388,39 +388,58 @@ const selectTweetWithIllust = tweets => {
         });
     }));
 
-    // app.use(route.post("/api/retweet/:statusId", function* (statusId) {
-    //     if (! this.session.twitterAuth) {
-    //         this.body = {success: false, reason: "You are not logged in Twitter."};
-    //         return;
-    //     }
-    //
-    //     const res = (yield this.twit.post("favorites/create", {id: statusId})).data;
-    //
-    //     if (res.errors) {
-    //         if (res.errors[0].code !== 139) { // 139: Already favorited
-    //             this.body = {success: false, reason: res.errors[0].message};
-    //             return;
-    //         }
-    //     }
-    //
-    //     this.body = {success: true};
-    // }));
-    //
-    // app.use(route.delete("/api/retweet/:statusId", function* (statusId) {
-    //     if (! this.session.twitterAuth) {
-    //         this.body = {success: false, reason: "You are not logged in Twitter."};
-    //         return;
-    //     }
-    //
-    //     const res = (yield this.twit.post("favorites/destroy", {id: statusId})).data;
-    //
-    //     if (res.errors) {
-    //         this.body = {success: false, reason: res.errors[0].message};
-    //         return;
-    //     }
-    //
-    //     this.body = {success: true};
-    // }));
+    app.use(route.post("/api/retweet/:statusId", function* (statusId) {
+        if (! this.session.twitterAuth) {
+            this.body = {success: false, reason: "You are not logged in Twitter."};
+            return;
+        }
+
+        const {status} = this.request.fields;
+        const [sourceTweet] = yield db.collection("tweets_cache").find({id_str: statusId}).toArray();
+
+        if (! sourceTweet) {
+            this.body = {success: false, reason: "Specified status not found on lov."};
+            return;
+        }
+
+        let res;
+        if (!_.isString(status) || status.trim() === "") {
+            res = (yield this.twit.post("statuses/retweet", {id: statusId})).data;
+        } else {
+            if (status.length > 140) {
+                this.body = {success: false, reason: "Tweet status too long."};
+                return;
+            }
+
+            let statusUrl = `https://twitter.com/${sourceTweet.user.screen_name}/status/${sourceTweet.id_str}/`;
+            res = (yield this.twit.post("statuses/update", {status: `${status} ${statusUrl}`}));
+        }
+
+        if (res.errors) {
+            if (res.errors[0].code !== 139) { // 139: Already favorited
+                this.body = {success: false, reason: res.errors[0].message};
+                return;
+            }
+        }
+
+        this.body = {success: true};
+    }));
+
+    app.use(route.delete("/api/retweet/:statusId", function* (statusId) {
+        if (! this.session.twitterAuth) {
+            this.body = {success: false, reason: "You are not logged in Twitter."};
+            return;
+        }
+
+        const res = (yield this.twit.post("statuses/unretweet", {id: statusId})).data;
+
+        if (res.errors) {
+            this.body = {success: false, reason: res.errors[0].message};
+            return;
+        }
+
+        this.body = {success: true};
+    }));
 
     ////-- twitter
     app.use(route.get("/auth/disconnect", function* () {
