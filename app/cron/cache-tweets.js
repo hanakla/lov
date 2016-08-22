@@ -31,7 +31,7 @@ const process = async () => {
             })).data;
 
             if (res.errors) {
-                throw new Error(errors[0].message);
+                throw new Error(res.errors[0].message);
             }
 
             let tweets = res.statuses;
