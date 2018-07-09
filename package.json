@@ -4,7 +4,9 @@
   "description": "'E'ncount to lovely gochiusa illustrations",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": "Ragg-",
   "license": "MIT",
@@ -42,12 +44,14 @@
     "nib": "^1.1.0",
     "passport-twitter": "^1.0.4",
     "twit": "^2.2.4",
-    "uuid": "^2.0.2"
+    "uuid": "^2.0.2",
+    "snyk": "^1.88.2"
   },
   "devDependencies": {
     "babel-loader": "^6.2.4",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-plumber": "^1.1.0",
     "webpack": "^1.13.1"
-  }
+  },
+  "snyk": true
 }
