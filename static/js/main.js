@@ -1,9 +1,9 @@
-require("whatwg-fetch");
-require("intersection-observer");
+import "whatwg-fetch";
+import "intersection-observer";
 
-const $ = require("./util/domutil");
-const querystring = require("querystring");
-const Wookmark = require("wookmark/wookmark");
+import $ from "./util/domutil";
+import * as querystring from "querystring";
+import * as Wookmark from "wookmark/wookmark";
 
 const ANIMATION_END_EVENTS = ["animationend", "webkitAnimationEnd", "oAnimationEnd", "mozAnimationEnd", "msAnimationEnd"];
 

@@ -142,7 +142,7 @@ const proto = Object.assign(Object.create(Array.prototype), {
     },
 });
 
-const $ = module.exports = (selector, el = document) => {
+const $ = (selector, el = document) => {
     var targets;
 
     if (typeof selector === "string") {
@@ -157,7 +157,7 @@ const $ = module.exports = (selector, el = document) => {
 };
 
 
-Object.assign(module.exports, {
+Object.assign($, {
     ready : new Promise(resolve => { window.addEventListener("DOMContentLoaded", resolve); }),
     parseHtml(string) {
         const root = document.createElement("div");
@@ -170,3 +170,5 @@ Object.assign(module.exports, {
         event.preventDefault();
     }
 });
+
+export default $
