@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "babel-loader": "^6.2.4",
-    "gulp": "git://github.com/gulpjs/gulp.git#4.0",
+    "gulp": "4.0.0",
     "gulp-plumber": "^1.1.0",
     "webpack": "^1.13.1"
   }
