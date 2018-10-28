@@ -82,8 +82,7 @@ const selectTweetWithIllust = tweets => {
     app.keys = config.session.keys;
     app.use(session({
         store: new MongoStore({
-            db,
-            collection: "sessions",
+            url: config.mongo.url
         }),
         cookie: {
             maxAge: 1000 * 60 * 60 * 24 * 90, // 90days
