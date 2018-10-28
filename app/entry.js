@@ -46,7 +46,8 @@ const selectTweetWithIllust = tweets => {
 
 (async () => {
     //-- MongoClient
-    const db = await MongoClient.connect(config.mongo.url);
+    const con = await MongoClient.connect(config.mongo.url);
+    const db = con.db('lov')
 
     //-- Twitter clients
     const globalTwit = new Twit({
