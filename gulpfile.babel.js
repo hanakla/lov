@@ -26,6 +26,8 @@ export function copyFonts() {
 export function buildWebpack(done) {
     webpack({
         // target: "web",
+        mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+        context: path.join(__dirname, "static/js/"),
         entry: {
             main: "main"
         },
@@ -35,35 +37,21 @@ export function buildWebpack(done) {
             path: path.join(__dirname, "build/js/"),
         },
         devtool: "#source-map",
-        resolve: {
-            root: [path.join(__dirname, "static/js/")],
-            modulesDirectories: ["bower_components", "node_modules"]
-        },
         externals: {
             "window": "window",
             "document": "document",
         },
         module: {
-            loaders: [
+            rules: [
                 {
                     test: /\.js$/,
                     loader: "babel-loader",
-                    exclude: /(node_modules|bower_components)/,
-                    query: {
-                        presets: ["es2015"],
-                        plugins: [
-                            "transform-runtime"
-                        ]
-                    }
+                    exclude: /(node_modules)/,
                 }
             ]
         },
         plugins: [
-            new webpack.ResolverPlugin(new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin("bower.json", ["main"])),
-            new webpack.ResolverPlugin(new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin("component.json", ["main"])),
-            new webpack.optimize.AggressiveMergingPlugin,
-            new webpack.optimize.DedupePlugin,
-            new webpack.optimize.UglifyJsPlugin,
+            new webpack.optimize.AggressiveMergingPlugin(),
         ]
     },  function(err, stats) {
         if (err) {
