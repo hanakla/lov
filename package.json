@@ -10,7 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "cron": "^1.1.0",
-    "fetch": "1.1.0",
     "gulp-load-plugins": "^1.2.4",
     "gulp-stylus": "^2.4.0",
     "gulp-webpack": "^1.5.0",
@@ -35,6 +34,7 @@
     "regenerator-runtime": "0.12.1",
     "twit": "^2.2.4",
     "uuid": "^2.0.2",
+    "whatwg-fetch": "3.0.0",
     "wookmark": "2.1.2"
   },
   "devDependencies": {
@@ -44,6 +44,7 @@
     "babel-loader": "8.0.4",
     "gulp": "4.0.0",
     "gulp-plumber": "^1.1.0",
-    "webpack": "4.23.1"
+    "webpack": "4.23.1",
+    "webpack-cli": "3.1.2"
   }
 }

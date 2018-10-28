@@ -1,9 +1,9 @@
-require("fetch");
+require("whatwg-fetch");
 require("intersection-observer");
 
 const $ = require("./util/domutil");
 const querystring = require("querystring");
-const Wookmark = require("wookmark");
+const Wookmark = require("wookmark/wookmark");
 
 const ANIMATION_END_EVENTS = ["animationend", "webkitAnimationEnd", "oAnimationEnd", "mozAnimationEnd", "msAnimationEnd"];
 
@@ -169,7 +169,7 @@ $.ready.then(() => {
         }
     });
 
-    const observer = new IntersectionObserver(([entry]) => {
+    const observer = new IntersectionObserver(async ([entry]) => {
         const $footerLoading = $(".footer_loading");
         $footerLoading.removeClass("footer_loading--no-loading");
 
