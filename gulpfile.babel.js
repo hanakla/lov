@@ -29,7 +29,7 @@ export function buildWebpack(done) {
         mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
         context: path.join(__dirname, "static/js/"),
         entry: {
-            main: "main"
+            main: "./main"
         },
         output: {
             filename: "[name].js",
