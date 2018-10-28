@@ -1,13 +1,5 @@
 {
     "presets" : [
-        "stage-3"
-    ],
-    "plugins" : [
-        "transform-es2015-block-scoping",
-        "transform-es2015-block-scoped-functions",
-        "transform-es2015-classes",
-        "transform-es2015-destructuring",
-        "transform-es2015-modules-commonjs",
-        "add-module-exports"
+        "env"
     ]
 }
