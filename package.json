@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "cron": "^1.1.0",
+    "fetch": "1.1.0",
     "gulp-load-plugins": "^1.2.4",
     "gulp-stylus": "^2.4.0",
     "gulp-webpack": "^1.5.0",
@@ -31,7 +32,8 @@
     "nib": "^1.1.0",
     "passport-twitter": "^1.0.4",
     "twit": "^2.2.4",
-    "uuid": "^2.0.2"
+    "uuid": "^2.0.2",
+    "wookmark": "2.1.2"
   },
   "devDependencies": {
     "@babel/core": "7.1.2",

@@ -1,8 +1,8 @@
-require("./thirdparty/fetch");
+require("fetch");
 
 const $ = require("./util/domutil");
 const querystring = require("querystring");
-const Wookmark = require("./thirdparty/wookmark");
+const Wookmark = require("wookmark");
 
 const ANIMATION_END_EVENTS = ["animationend", "webkitAnimationEnd", "oAnimationEnd", "mozAnimationEnd", "msAnimationEnd"];
 
