@@ -1,4 +1,5 @@
 require("fetch");
+require("intersection-observer");
 
 const $ = require("./util/domutil");
 const querystring = require("querystring");
@@ -50,55 +51,6 @@ $.ready.then(() => {
             wookmarkAnimationRequestId = null;
         });
     };
-
-    $(window).on("scroll", threshold(10, async e => {
-        const scrollBottom = window.innerHeight + Math.max(document.body.scrollTop, document.documentElement.scrollTop) + 60;
-
-        if (scrollBottom < document.body.scrollHeight) return;
-        if (activeRequest) return;
-
-        const $footerLoading = $(".footer_loading");
-        $footerLoading.removeClass("footer_loading--no-loading");
-
-        activeRequest = fetch("/api/index?" + querystring.stringify({
-            date: searchStatus.date.current,
-            lastStatusId: searchStatus.lastStatusId
-        }), {
-            method: "GET",
-            credentials: "same-origin",
-        });
-
-        const response = JSON.parse(await (await activeRequest).text());
-
-        mixpanel.track("access:next-page", {
-            next_page_available: response.available,
-            date: searchStatus.date.current
-        });
-
-        if (! response.available) {
-            $footerLoading.addClass("footer_loading--no-loading");
-            return;
-        }
-
-        const $list = $.parseHtml(response.list);
-        $list.css("display", "none").appendTo(".illusts");
-
-        await Promise.all($list.find("img").map(el => new Promise(resolve => {
-            $(el)
-                .once("load", resolve)
-                .once("error", resolve);
-        })));
-
-        $list.css("display", "");
-        resetWookmark();
-        setTimeout(() => {
-            $list.removeClass("illust--loading");
-            $footerLoading.addClass("footer_loading--no-loading");
-        }, 100);
-
-        searchStatus = response.searchStatus;
-        activeRequest = null;
-    }));
 
     // Viewer Open/Close
     $(window).on("keyup", e => {
@@ -216,6 +168,52 @@ $.ready.then(() => {
             $(e.target).removeClass("illust_action--retweeted").addClass("illust_action--retweet");
         }
     });
+
+    const observer = new IntersectionObserver(([entry]) => {
+        const $footerLoading = $(".footer_loading");
+        $footerLoading.removeClass("footer_loading--no-loading");
+
+        activeRequest = fetch("/api/index?" + querystring.stringify({
+            date: searchStatus.date.current,
+            lastStatusId: searchStatus.lastStatusId
+        }), {
+            method: "GET",
+            credentials: "same-origin",
+        });
+
+        const response = JSON.parse(await (await activeRequest).text());
+
+        mixpanel.track("access:next-page", {
+            next_page_available: response.available,
+            date: searchStatus.date.current
+        });
+
+        if (! response.available) {
+            $footerLoading.addClass("footer_loading--no-loading");
+            return;
+        }
+
+        const $list = $.parseHtml(response.list);
+        $list.css("display", "none").appendTo(".illusts");
+
+        await Promise.all($list.find("img").map(el => new Promise(resolve => {
+            $(el)
+                .once("load", resolve)
+                .once("error", resolve);
+        })));
+
+        $list.css("display", "");
+        resetWookmark();
+        setTimeout(() => {
+            $list.removeClass("illust--loading");
+            $footerLoading.addClass("footer_loading--no-loading");
+        }, 100);
+
+        searchStatus = response.searchStatus;
+        activeRequest = null
+    }, { rootMargin: "10px", threshold: 1 })
+
+    observer.observe($('#sentinel')[0])
 
     // wait for image load
     Promise.race([$(window).awaitEvent("load"), timer(3000)]).then(() => {
