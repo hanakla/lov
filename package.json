@@ -14,7 +14,7 @@
     "gulp-stylus": "^2.4.0",
     "gulp-webpack": "^1.5.0",
     "intersection-observer": "0.5.1",
-    "koa": "^1.2.0",
+    "koa": "^1.4.1",
     "koa-better-body": "^2.0.1",
     "koa-generic-session": "^1.10.2",
     "koa-generic-session-mongo": "^0.2.5",
@@ -32,7 +32,7 @@
     "nib": "^1.1.0",
     "passport-twitter": "^1.0.4",
     "regenerator-runtime": "0.12.1",
-    "twit": "^2.2.4",
+    "twit": "^2.2.5",
     "uuid": "^2.0.2",
     "whatwg-fetch": "3.0.0",
     "wookmark": "2.1.2"
