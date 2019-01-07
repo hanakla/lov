@@ -32,7 +32,7 @@
     "nib": "^1.1.0",
     "passport-twitter": "^1.0.4",
     "regenerator-runtime": "0.12.1",
-    "twit": "^2.2.4",
+    "twit": "^2.2.5",
     "uuid": "^2.0.2",
     "whatwg-fetch": "3.0.0",
     "wookmark": "2.1.2"
