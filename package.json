@@ -4,7 +4,9 @@
   "description": "'E'ncount to lovely gochiusa illustrations",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "snyk-protect": "snyk protect",
+    "prepare": "yarn run snyk-protect"
   },
   "author": "Ragg-",
   "license": "MIT",
@@ -35,7 +37,8 @@
     "twit": "^2.2.4",
     "uuid": "^2.0.2",
     "whatwg-fetch": "3.0.0",
-    "wookmark": "2.1.2"
+    "wookmark": "2.1.2",
+    "snyk": "^1.317.0"
   },
   "devDependencies": {
     "@babel/core": "7.1.2",
@@ -46,5 +49,6 @@
     "gulp-plumber": "^1.1.0",
     "webpack": "4.23.1",
     "webpack-cli": "3.1.2"
-  }
+  },
+  "snyk": true
 }
